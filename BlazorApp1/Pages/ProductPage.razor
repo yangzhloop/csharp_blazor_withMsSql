@@ -1,0 +1,90 @@
+﻿@page "/products-page"
+@inject HttpClient Http
+@using System.Text.Json.Serialization;
+@using  System.Text.Json
+<PageTitle>Products Page</PageTitle>
+
+<h1>Products</h1>
+
+<p>This page fetches and displays product data from the API.</p>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                    <td>@product.Qty</td>
+                    <td>@product.CategoryId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@code {
+    private Product[]? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Http.GetAsync("api/products");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Raw API Response: {responseString}");
+
+                // Deserialize the response
+                products = JsonSerializer.Deserialize<Product[]>(responseString);
+
+                Console.WriteLine($"Products fetched: {products?.Length ?? 0}");
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error fetching products: {errorContent}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception occurred: {ex.Message}");
+        }
+    }
+}
+
+    public class Product
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+
+        [JsonPropertyName("price")]
+        public decimal Price { get; set; }
+
+        [JsonPropertyName("qty")]
+        public int Qty { get; set; }
+
+        [JsonPropertyName("categoryId")]
+        public int CategoryId { get; set; }
+    }
+}

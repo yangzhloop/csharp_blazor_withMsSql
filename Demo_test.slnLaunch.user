@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "新建配置文件",
+    "Projects": [
+      {
+        "Path": "WebApplication2\\Demo.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "BlazorApp1\\BlazorApp1.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
